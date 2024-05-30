@@ -8,7 +8,7 @@ public class Timer : MonoBehaviour
 {
     public GameManager gameManager;
 
-    public float timeRemaining = 182;
+    public float timeRemaining = 180f;
     public bool timeIsRunning = false;
     public bool showTimer = false;
 
@@ -19,9 +19,11 @@ public class Timer : MonoBehaviour
     public GameObject objCanvas;
     public GameObject inGamePanel;
     public GameObject gameOverPanel;
+    public TMP_Text gameOverText;
 
     [Header("GameElements")]
     public GameObject mc;
+    public AudioSource explosion;
 
 
     // Start is called before the first frame update
@@ -40,27 +42,28 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (timeRemaining <= 32f) 
+        if (timeRemaining <= 30f) 
         {
             timeText.color = Color.yellow;
         }
-        if (timeRemaining <= 12f) 
+        if (timeRemaining <= 10f) 
         {
             timeText.color = Color.red;
         }
 
-        if (timeRemaining <= 1.2f)
+        if (timeRemaining <= 0f)
         {
-            //GameOver();
+            
             gameManager.bombTicking.Stop();
+            explosion.Play();
             timeIsRunning = false;
-            //Time.timeScale = 0f;
+            GameOver();
 
         }
         if (timeIsRunning)
         {
 
-            if (timeRemaining <= 182)
+            if (timeRemaining <= 180f)
             {
                 TimeDisplay();
                 
@@ -91,15 +94,19 @@ public class Timer : MonoBehaviour
     }
 
 
-    // use this method later on if run out of time and set the UI video of the explosion
-    //public void GameOver()
-    //{
-        //if (!timeIsRunning)
-        //{
-            //Cursor.lockState = CursorLockMode.None;
-            //Cursor.visible = true;
-            
+    //use this method later on if run out of time and set the UI video of the explosion
+    public void GameOver()
+    {
+        if (!timeIsRunning)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Time.timeScale = 0f;
+
             //Add something that will call out the GameOver Scene or Video
-        //}
-    //}
+            
+            inGamePanel.gameObject.SetActive(false);
+            gameOverPanel.gameObject.SetActive(true);
+        }
+    }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 using UnityEditor.Rendering;
 using System.Linq;
 using static UnityEditor.Progress;
@@ -211,7 +212,16 @@ public class GameManager : MonoBehaviour
             StartCoroutine(DisableDialogue());
         }
     }
+    public void PlayAgain() 
+    {
+        SceneManager.LoadSceneAsync(0);
+        Time.timeScale = 1.0f;
+    }
 
+    public void QuitGame() 
+    {
+        Application.Quit();
+    }
 }
 
 
