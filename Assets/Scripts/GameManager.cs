@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(DisableDialogue());
 
     }
-    IEnumerator DisableDialogue() 
+    IEnumerator DisableDialogue()
     {
         yield return new WaitForSeconds(2f);
         dialogueText.text = null;
@@ -149,7 +149,6 @@ public class GameManager : MonoBehaviour
             Inventory.instance.AddItem(items[3]);
             battery = true;
             Destroy(hit.collider.gameObject);
-
         }
 
         //Open light
@@ -198,7 +197,8 @@ public class GameManager : MonoBehaviour
             dialogueText.text = "A bomb!? I need to find a way to disarm it.";
             StartCoroutine(DisableDialogue());
             bomb = true;
-            //timer.TimeDisplay();
+            timer.showTimer = true;
+            timer.TimeDisplay();
         }
         else if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Bomb" && scissors == true) 
         {
@@ -210,12 +210,7 @@ public class GameManager : MonoBehaviour
             dialogueText.text = "Now I have to get out of here";
             StartCoroutine(DisableDialogue());
         }
-
-
-
-
     }
-    
 
 }
 

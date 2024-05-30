@@ -10,6 +10,7 @@ public class Timer : MonoBehaviour
 
     public float timeRemaining = 182;
     public bool timeIsRunning = false;
+    public bool showTimer = false;
 
     [Header("References")]
     public TextMeshProUGUI timeText;
@@ -56,27 +57,37 @@ public class Timer : MonoBehaviour
             //Time.timeScale = 0f;
 
         }
-
         if (timeIsRunning)
         {
 
             if (timeRemaining <= 182)
             {
-                timeRemaining -= Time.deltaTime;
-                TimeDisplay(timeRemaining);
+                TimeDisplay();
+                
             }
 
         }
+
     }
 
 
-    public void TimeDisplay(float timeToDisplay)
+    public void TimeDisplay()
     {
-        
-        timeToDisplay -= 1;
+
+        float timeToDisplay;
+        timeToDisplay = timeRemaining -= Time.deltaTime;
         float minutes = Mathf.FloorToInt(timeToDisplay / 60);
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        if (!showTimer)
+        {
+            timeText.text = null;
+        }
+        else 
+        {
+            timeText.text = string.Format("{0:00} : {1:00}", minutes, seconds);
+        }
+        
+        
     }
 
 
