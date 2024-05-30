@@ -33,12 +33,14 @@ public class GameManager : MonoBehaviour
     public bool hasKeys = false;
     public bool scissors;
     public bool flashLight;
+    public bool fLight = false;
     public bool battery;
     public bool bomb = false;
     public bool disarmed = false;
     public GameObject doorObj;
     public GameObject door2;
     public Door door;
+    public AudioSource win;
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +70,8 @@ public class GameManager : MonoBehaviour
         timer.timeIsRunning = true;
         mission.SetActive(true);
         missionText.text = "Find the source of the sound and stop it.";
+        yield return new WaitForSeconds(2f);
+        dialogueText.text = "I have to find where it is the noise coming from...";
         StartCoroutine(DisableDialogue());
 
     }
@@ -80,19 +84,25 @@ public class GameManager : MonoBehaviour
     {
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         RaycastHit hit;
-        
+
         //Raycast Hit Objects (Items and Door Layers)
-        if (Physics.Raycast(ray, out hit, 2f, layerMask))
+        if (Physics.Raycast(ray, out hit, 2f, layerMask) && disarmed == false)
         {
             objectText.text = hit.collider.name.ToString();
             interactText.text = "Press 'E' to interact";
             Debug.Log(hit.collider.name);
+        }
+        else if (Physics.Raycast(ray, out hit, 2f, layerMask) && disarmed == true)
+        {
+            objectText.text = null;
+            interactText.text = null;
         }
         else
         {
             objectText.text = null;
             interactText.text = null;
         }
+        
 
         //Key Interaction
         if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Keys" && flashLight == false && battery == false)
@@ -105,7 +115,12 @@ public class GameManager : MonoBehaviour
             dialogueText.text = "I still need to find the battery first";
             StartCoroutine(DisableDialogue());
         }
-        else if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Keys" && flashLight == true && battery == true) 
+        else if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Keys" && flashLight == true && battery == true && fLight == false)
+        {
+            dialogueText.text = "I need to use flashlight to see things.";
+            StartCoroutine(DisableDialogue());
+        }
+        else if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Keys" && flashLight == true && battery == true && fLight == true) 
         {
             Inventory.instance.AddItem(items[0]);
             hasKeys = true;
@@ -148,6 +163,9 @@ public class GameManager : MonoBehaviour
             Inventory.instance.AddItem(items[3]);
             battery = true;
             Destroy(hit.collider.gameObject);
+            dialogueText.text = "Now I can use the flashlight to see things.";
+            StartCoroutine(DisableDialogue());
+            
         }
 
         //Open light
@@ -158,8 +176,19 @@ public class GameManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.F) && battery == true && flashLight == true)
         {
-            lightsOn.gameObject.SetActive(true);
+            if (!fLight)
+            {
+                fLight = true;
+                lightsOn.gameObject.SetActive(true);
+            }
+            else 
+            {
+                fLight = false;
+                lightsOn.gameObject.SetActive(false);
+            }
+
         }
+
 
         //Door Interaction
         if (Input.GetKeyDown(KeyCode.E) && !hasKeys && hit.collider.name == "Door2")
@@ -178,8 +207,12 @@ public class GameManager : MonoBehaviour
                 door.Close();
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Door1" && hasKeys && disarmed == false)
+        if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Door1" && !hasKeys && disarmed == false)
+        {
+            dialogueText.text = "I can't go out there yet, I still need to do something.";
+            StartCoroutine(DisableDialogue());
+        }
+        else if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Door1" && hasKeys && disarmed == false)
         {
             dialogueText.text = "I can't go out there yet, I still need to do something.";
             StartCoroutine(DisableDialogue());
@@ -188,12 +221,17 @@ public class GameManager : MonoBehaviour
         {
             //Add some Game Complete Scene or UI Video.
             //then disable some of the things you want.
+            timer.gameOverText.text = "You finally defused the bomb, Good Job!";
+
+            win.Play();
+            
+            timer.GameOver();
         }
 
         //Bomb Got Hit by Raycast
         if (Input.GetKeyDown(KeyCode.E) && hit.collider.name == "Bomb" && scissors == false)
         {
-            dialogueText.text = "A bomb!? I need to find a way to disarm it.";
+            dialogueText.text = "A bomb!? I need to find a way to disarm it!";
             StartCoroutine(DisableDialogue());
             bomb = true;
             timer.showTimer = true;

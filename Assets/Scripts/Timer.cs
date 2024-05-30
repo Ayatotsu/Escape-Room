@@ -66,7 +66,6 @@ public class Timer : MonoBehaviour
             if (timeRemaining <= 180f)
             {
                 TimeDisplay();
-                
             }
 
         }
